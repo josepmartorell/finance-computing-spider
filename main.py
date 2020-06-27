@@ -6,64 +6,73 @@
 import requests
 import pandas as pd
 
-wikiURL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-wikiResponse = requests.get(wikiURL)
-data = {"Company": []}
-i = 1
 
-for ticker in range(10):  # 10 instead of 500 for testing purposes
-    wikiSplit = wikiResponse.text.split("external text")[i]
-    wikiSplitAgain = wikiSplit.split(">")[1]
-    wikiTicker = wikiSplitAgain.split("<")[0]
-    data["Company"].append(wikiTicker)
-    i += 2
+class App:
+    def __init__(self):
+        self.wikiURL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+        self.wikiResponse = requests.get(self.wikiURL)
+        self.data = {"Company": []}
+        self.position = 1
+        self.indicators = {"Previous Close": [],
+                           "Open": [],
+                           "Bid": [],
+                           "Ask": [],
+                           "Day&#x27;s Range": [],
+                           "52 Week Range": [],
+                           "Volume": [],
+                           "Avg. Volume": [],
+                           "Market Cap": [],
+                           "Beta": [],
+                           "PE Ratio (TTM)": [],
+                           "EPS (TTM)": [],
+                           "Earnings Date": [],
+                           "Dividend &amp; Yield": [],
+                           "Ex-Dividend Date": [],
+                           "1y Target Est": []}
 
-Indicators = {"Previous Close": [],
-              "Open": [],
-              "Bid": [],
-              "Ask": [],
-              "Day&#x27;s Range": [],
-              "52 Week Range": [],
-              "Volume": [],
-              "Avg. Volume": [],
-              "Market Cap": [],
-              "Beta": [],
-              "PE Ratio (TTM)": [],
-              "EPS (TTM)": [],
-              "Earnings Date": [],
-              "Dividend &amp; Yield": [],
-              "Ex-Dividend Date": [],
-              "1y Target Est": []}
+    def extract_tickers(self):
+        for ticker in range(10):  # 10 instead of 500 for testing purposes
+            wiki_split1 = self.wikiResponse.text.split("external text")[self.position]
+            wiki_split2 = wiki_split1.split(">")[1]
+            wiki_ticker = wiki_split2.split("<")[0]
+            self.data["Company"].append(wiki_ticker)
+            self.position += 2
 
-for tickerSymbol in data["Company"]:
-    url = ("http://finance.yahoo.com/quote/" + tickerSymbol
-           + "?p=" + tickerSymbol)
-    response = requests.get(url)
-    htmlText = response.text
-    for indicator in Indicators:
-        try:
-            if indicator == "Day&#x27;s Range" or indicator == "52 Week Range" \
-                    or indicator == "Dividend &amp; Yield":
-                yahooSplit1 = htmlText.split(indicator)[1]
-                yahooSplit2 = yahooSplit1.split('</span>')[1]
-                yahooSplit3 = yahooSplit2.split("reactid=")[1]
-                yahooSplit4 = yahooSplit3.split("</td>")[0]
-                yahooSplit5 = yahooSplit4.split("\">")[1]
-                Indicators[indicator].append(yahooSplit5)
-            else:
-                yahooSplit = htmlText.split(indicator)[1]
-                yahooSplitAgain = yahooSplit.split('</span>')[1]
-                yahooSplitAnother = yahooSplitAgain.split("reactid=")[2]
-                yahooIndicator = yahooSplitAnother.split("\">")[1]
-                Indicators[indicator].append(yahooIndicator)
-        except:
-            Indicators[indicator].append("N/A")
+    def cross_databases(self):
+        self.extract_tickers()
+        for tickerSymbol in self.data["Company"]:
+            url = ("http://finance.yahoo.com/quote/" + tickerSymbol
+                   + "?p=" + tickerSymbol)
+            response = requests.get(url)
+            html_text = response.text
+            for indicator in self.indicators:
+                try:
+                    if indicator == "Day&#x27;s Range" or indicator == "52 Week Range" \
+                            or indicator == "Dividend &amp; Yield":
+                        yahoo_split1 = html_text.split(indicator)[1]
+                        yahoo_split2 = yahoo_split1.split('</span>')[1]
+                        yahoo_split3 = yahoo_split2.split("reactid=")[1]
+                        yahoo_split4 = yahoo_split3.split("</td>")[0]
+                        yahoo_split5 = yahoo_split4.split("\">")[1]
+                        self.indicators[indicator].append(yahoo_split5)
+                    else:
+                        yahoo_split1 = html_text.split(indicator)[1]
+                        yahoo_split2 = yahoo_split1.split('</span>')[1]
+                        yahoo_split3 = yahoo_split2.split("reactid=")[2]
+                        yahoo_split4 = yahoo_split3.split("\">")[1]
+                        self.indicators[indicator].append(yahoo_split4)
+                except:
+                    self.indicators[indicator].append("N/A")
 
-data.update(Indicators)
-pd.options.display.max_columns = None
-df = pd.DataFrame(data)
-# print(df.head())
-# print(df.tail())
-print(df)
 
-# todo: in development...
+if __name__ == '__main__':
+    app = App()
+    app.cross_databases()
+    app.data.update(app.indicators)
+    pd.options.display.max_columns = None
+    df = pd.DataFrame(app.data)
+    # print(df.head())
+    # print(df.tail())
+    print(df)
+
+    # todo: in development...
