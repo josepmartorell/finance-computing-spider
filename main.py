@@ -36,16 +36,16 @@ class App:
                            "Ex-Dividend Date": [],
                            "1y Target Est": []}
 
-    def extract_tickers(self):
-        for ticker in range(15):  # 10 instead of 500 for testing purposes
+    def extract_tickers(self, ranges):
+        for ticker in range(ranges):  # 10 instead of 500 for testing purposes
             wiki_split1 = self.wikiResponse.text.split("external text")[self.position]
             wiki_split2 = wiki_split1.split(">")[1]
             wiki_ticker = wiki_split2.split("<")[0]
             self.data["Company"].append(wiki_ticker)
             self.position += 2
 
-    def cross_databases(self):
-        self.extract_tickers()
+    def cross_databases(self, scope):
+        self.extract_tickers(scope)
         for tickerSymbol in self.data["Company"]:
             url = ("http://finance.yahoo.com/quote/" + tickerSymbol
                    + "?p=" + tickerSymbol)
@@ -73,19 +73,30 @@ class App:
 
 if __name__ == '__main__':
     app = App()
-    app.cross_databases()
-    app.data.update(app.indicators)
-    df = pd.DataFrame(app.data)
-    print("\nShortened head/tail preview:\n")
-    print(df.head())
-    print(df.tail())
-    pd.options.display.max_columns = None
-    print("\nDisplay of the first 10 stocks:\n")
-    print(df)
-    print("\nCompilation data of the first 10 stocks:\n")
-    print(render_csv(df))
-    df.to_csv(r"stock.csv")
-    df.to_json(r"stock.json", orient="index")
+    mode = input('\nSelect spider run mode:'
+                 '\n\tDEMO .........(type "d" + enter)'
+                 '\n\tAUTOMATIC ....(press enter)\n')
+
+    if mode != "d":
+        app.cross_databases(20)
+        app.data.update(app.indicators)
+        df = pd.DataFrame(app.data)
+        df.to_csv(r"stock.csv")
+        df.to_json(r"stock.json", orient="index")
+    else:
+        app.cross_databases(10)
+        app.data.update(app.indicators)
+        df = pd.DataFrame(app.data)
+        print("\n\nSAMPLE 1:\n\tShortened head/tail preview:\n")
+        print(df.head())
+        print(df.tail())
+        pd.options.display.max_columns = None
+        print("\n\nSAMPLE 2:\n\tDisplay of the first 10 stocks:\n")
+        print(df)
+        print("\n\nSAMPLE 3:\n\tCompilation data of the first 10 stocks:\n")
+        print(render_csv(df))
+        df.to_csv(r"stock.csv")
+        df.to_json(r"stock.json", orient="index")
 
     # todo: in development...
     #  spider challenge: https://www.freeformatter.com/json-formatter.html
