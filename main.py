@@ -37,7 +37,7 @@ class App:
                            "1y Target Est": []}
 
     def extract_tickers(self):
-        for ticker in range(10):  # 10 instead of 500 for testing purposes
+        for ticker in range(15):  # 10 instead of 500 for testing purposes
             wiki_split1 = self.wikiResponse.text.split("external text")[self.position]
             wiki_split2 = wiki_split1.split(">")[1]
             wiki_ticker = wiki_split2.split("<")[0]
@@ -84,6 +84,8 @@ if __name__ == '__main__':
     print(df)
     print("\nCompilation data of the first 10 stocks:\n")
     print(render_csv(df))
-    df.to_csv("stock.csv")
+    df.to_csv(r"stock.csv")
+    df.to_json(r"stock.json", orient="index")
 
     # todo: in development...
+    #  spider challenge: https://www.freeformatter.com/json-formatter.html
