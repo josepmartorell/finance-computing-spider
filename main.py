@@ -5,6 +5,12 @@
 
 import requests
 import pandas as pd
+import csv
+
+
+def render_csv(data):
+    CSV = "\n".join([k + ',' + ",".join(v) for k, v in data.items()])
+    return CSV
 
 
 class App:
@@ -69,10 +75,15 @@ if __name__ == '__main__':
     app = App()
     app.cross_databases()
     app.data.update(app.indicators)
-    pd.options.display.max_columns = None
     df = pd.DataFrame(app.data)
-    # print(df.head())
-    # print(df.tail())
+    print("\nShortened head/tail preview:\n")
+    print(df.head())
+    print(df.tail())
+    pd.options.display.max_columns = None
+    print("\nDisplay of the first 10 stocks:\n")
     print(df)
+    print("\nCompilation data of the first 10 stocks:\n")
+    print(render_csv(df))
+    df.to_csv("stock.csv")
 
     # todo: in development...
