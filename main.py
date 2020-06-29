@@ -78,10 +78,13 @@ if __name__ == '__main__':
                        '- TRACKER.....(1 + Enter)\n'))
 
     if switch != 0:
+        print(" \nScraping all stocks ...")
         app.cross_databases(500)
         app.data.update(app.indicators)
         df = pd.DataFrame(app.data)
+        print("Rendering data to csv ...")
         df.to_csv(r"stock.csv")
+        print("Rendering data to json ...\n")
         df.to_json(r"stock.json", orient="index", indent=4)
     else:
         print("\nTracking test sample ...")
@@ -99,6 +102,3 @@ if __name__ == '__main__':
         df.to_csv(r"stock.csv")
         print("Rendering data to json ...\n")
         df.to_json(r"stock.json", orient="index", indent=4)
-
-    # todo: in development...
-    #  spider challenge: https://www.freeformatter.com/json-formatter.html
