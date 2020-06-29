@@ -5,7 +5,6 @@
 
 import requests
 import pandas as pd
-import csv
 
 
 def render_csv(data):
@@ -73,30 +72,33 @@ class App:
 
 if __name__ == '__main__':
     app = App()
-    mode = input('\nSelect spider run mode:'
-                 '\n\tDEMO .........(type "d" + enter)'
-                 '\n\tAUTOMATIC ....(press enter)\n')
+    # spider run mode selector
+    switch = int(input('\nSWITCH SPIDER RUN MODE:\n\t'
+                       '- TEST........(0 + Enter)\n\t'
+                       '- TRACKER.....(1 + Enter)\n'))
 
-    if mode != "d":
-        app.cross_databases(20)
+    if switch != 0:
+        app.cross_databases(500)
         app.data.update(app.indicators)
         df = pd.DataFrame(app.data)
         df.to_csv(r"stock.csv")
-        df.to_json(r"stock.json", orient="index")
+        df.to_json(r"stock.json", orient="index", indent=4)
     else:
+        print("\nTracking test sample ...")
         app.cross_databases(10)
         app.data.update(app.indicators)
         df = pd.DataFrame(app.data)
-        print("\n\nSAMPLE 1:\n\tShortened head/tail preview:\n")
+        print("Screening shortened head sample ...\n")
         print(df.head())
-        print(df.tail())
         pd.options.display.max_columns = None
-        print("\n\nSAMPLE 2:\n\tDisplay of the first 10 stocks:\n")
+        print("\nScreening full columns display ...\n")
         print(df)
-        print("\n\nSAMPLE 3:\n\tCompilation data of the first 10 stocks:\n")
+        print("\nScreening compacted information ...\n")
         print(render_csv(df))
+        print("\nRendering data to csv ...")
         df.to_csv(r"stock.csv")
-        df.to_json(r"stock.json", orient="index")
+        print("Rendering data to json ...\n")
+        df.to_json(r"stock.json", orient="index", indent=4)
 
     # todo: in development...
     #  spider challenge: https://www.freeformatter.com/json-formatter.html
