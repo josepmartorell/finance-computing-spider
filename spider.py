@@ -22,7 +22,7 @@ class App:
                            "Open": [],
                            "Bid": [],
                            "Ask": [],
-                           "Day&#x27;s Range": [],
+                           "Day's Range": [],
                            "52 Week Range": [],
                            "Volume": [],
                            "Avg. Volume": [],
