@@ -65,6 +65,8 @@ class App:
                         yahoo_split2 = yahoo_split1.split('</span>')[1]
                         yahoo_split3 = yahoo_split2.split("reactid=")[2]
                         yahoo_split4 = yahoo_split3.split("\">")[1]
+                        if len(yahoo_split4) > 20:
+                            yahoo_split4 = "N/A"
                         self.indicators[indicator].append(yahoo_split4)
                 except:
                     self.indicators[indicator].append("N/A")
